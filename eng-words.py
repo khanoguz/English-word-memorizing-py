@@ -1,8 +1,6 @@
 import os,sqlite3
 import time,random
 
-
-
 def main():
     os.system("clear")
     db = sqlite3.connect("words.db")
@@ -12,28 +10,46 @@ def main():
     Welcome, please select your choice
     [1]Find a word
     [2]Add a word
-    [3]Random mood
+    [3]Delete a Word
+    [4]Random mood
+    [5]See all words
     """)
     
     choice1 = input(":")
+
     if choice1 == "1":
-        word = input("Write what you wanna find:")
-        cursor.execute("SELECT * FROM words WHERE english = '{}'".format(word))
-        print(cursor.fetchone())
-        input("Found")
-        os.system("clear")
-        db.close()
+        flag = True
+        while flag == True:
+            db = sqlite3.connect("words.db")
+            word = input("Write what you wanna find:")
+            word = word.lower()
+            cursor.execute("SELECT * FROM words WHERE english = '{}'".format(word))
+            print(cursor.fetchone())
+            sec = input("Any button for new word or q for main menu:")
+            os.system("clear")
+            db.close()
+            if sec == "q":
+                flag = False
+
     elif choice1 == "2":
         e_word = input("Write your English word:")
         t_word = input("Write the meaning of the word:")
         insert = "INSERT INTO words(english,Turkish) VALUES (?,?);"
-        a = (e_word, t_word)
+        a = (e_word.lower(), t_word.lower())
         cursor.execute(insert,a)
         db.commit()
         input("ADDED")
         os.system("clear")
         db.close()
     elif choice1 == "3":
+
+        wordd = input("Please write word that you wanna delete:")
+        dell = cursor.execute("DELETE FROM words WHERE english = '{}'".format(wordd.lower()))
+        db.commit()
+        db.close()
+        input("Enter for main")
+
+    elif choice1 == "4":
         eng_word = []
         sql = "SELECT * FROM words"
         cursor.execute(sql)
@@ -52,34 +68,51 @@ def main():
 
                 if rang != 1:
                     if control == 'y':
-                        print(control,"bildin")
+
                         del eng_word[rast]
                     elif control == 'n':
-                        print(control,"Bilemedin")
+                        pass
                     else:
-                        print("adam akili bisey gir!")
-                elif:
-                    print("1 kaldiiiiiiiiiiiiiiii")
+                        print("Please y or n")
+                elif rang != 1:
+                    print("Last one..")
                     print(eng_word[0])
 
                     control2 = str(input("Do u remember this word ? Y/N:"))
 
                     if control2 == 'y':
-                        print("bildinnn")
+                        print("Correct..")
                         rang = 0
                     elif control2 == 'n':
                         pass
                     else:
-                        print("adammm akilli bisy girr")
+                        print("Please y or n")
             except:
-                print("bittii")
+                print("Congratulations..")
                 input()
                 rang = 0
 
 
+    elif choice1 == "5":
+        os.system("clear")
+        db = sqlite3.connect("words.db")
+        eng_words = []
+        sql = "SELECT * FROM words"
+        cursor.execute(sql)
+        words = cursor.fetchall()
+
+        for i in words:
+            eng_words.append(i)
 
 
+        print("-------There is {} words in the database-------".format(len(eng_words)))
 
+        for a in eng_words:
+            print(a)
+        input("Enter for main menu")
+
+    else:
+        print("Please choose something!")
 
 
 if __name__ == '__main__':
